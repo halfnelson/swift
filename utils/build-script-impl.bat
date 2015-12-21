@@ -1,0 +1,1 @@
+powershell  .\build-script-impl.ps1 -verbose %*

@@ -694,7 +694,7 @@ the number of parallel build jobs to use""",
         shutil.rmtree(build_dir)
 
     build_script_impl_args = [
-        os.path.join(SWIFT_SOURCE_ROOT, "swift", "utils", "build-script-impl"),
+        os.path.join(SWIFT_SOURCE_ROOT, "swift", "utils", "build-script-impl.bat" if os.name == "nt" else "build-script-impl"),
         "--build-dir", build_dir,
         "--cmark-build-type", args.cmark_build_variant,
         "--llvm-build-type", args.llvm_build_variant,
@@ -725,6 +725,13 @@ the number of parallel build jobs to use""",
     # Unset environment variables that might affect how tools behave.
     for v in [ 'MAKEFLAGS', 'SDKROOT', 'MACOSX_DEPLOYMENT_TARGET', 'IPHONEOS_DEPLOYMENT_TARGET' ]:
         os.environ.pop(v, None)
+      
+	# if windows change args from -- to - for powershell
+	if os.name == "nt":
+		build_script_impl_args = map(lambda x: x.replace("--","-"), build_script_impl_args)	
+		build_script_impl_args = map(lambda x: "1" if x.lower() == "true" else x, build_script_impl_args)
+		build_script_impl_args = map(lambda x: "0" if x.lower() == "false" else x, build_script_impl_args)
+	
 
     check_call(build_script_impl_args)
 
